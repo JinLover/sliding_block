@@ -20,8 +20,7 @@ class Block():
         y, x = self.blank
         result = []
         for tile in [[y-1, x], [y+1, x], [y, x-1], [y, x+1]]:
-            position = self.n * tile[0] + tile[1]
-            if 0 <= position and position < self.n**2:
+            if 0 <= tile[0] < self.n and 0 <= tile[1] < self.n:
                 result.append(tile)
         return result
         
@@ -38,19 +37,34 @@ class Block():
         assert self.adjacent(self.blank, coord)
         self.map[coord[0]][coord[1]], self.map[self.blank[0]][self.blank[1]] = self.map[self.blank[0]][self.blank[1]], self.map[coord[0]][coord[1]]
         self.blank = coord
-            
-        
+    
     def check(self) -> bool:
         if self.map == self.answer:
             return True
         return False
+    
+    def print(self):
+        for i in range(self.n):
+            for j in range(self.n):
+                print(self.map[i][j], end = " ")
+            print()
 
 if __name__ == "__main__":
+    import random
     block = Block(3)
-    print(block.map)
+    block.map = [[1,3,6],[4,0,2],[7,5,8]]
+    # print(block.map)
     # block.move(6)
     # block.check()
-    print(block.blank)
-    available = block.available()
-    block.move(available[1])
-    print(block.map)
+    # print(block.blank)
+    
+    # for _ in range(10):
+    #     available = block.available()
+    #     try:
+    #         randint = random.randint(0, len(available)-1)
+    #         # print(len(available), randint)
+    #         block.move(available[randint])
+    #     except:
+    #         print(randint, available[randint], block.blank)
+            
+    block.print()
