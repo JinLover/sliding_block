@@ -24,7 +24,7 @@ class Block():
                 result.append(tile)
         return result
         
-    def move(self, target: int | list[int], type: str = "update") -> list[list[int]] | None:
+    def move(self, target: int | list[int]) -> None:
         if isinstance(target, int):
             position = target - 1
         elif isinstance(target, list):
@@ -35,16 +35,8 @@ class Block():
         coord = [position // self.n, position % self.n]
         # check tile is adjacent to blank
         assert self.adjacent(self.blank, coord)
-        if type == "update":
-            self.map[coord[0]][coord[1]], self.map[self.blank[0]][self.blank[1]] = self.map[self.blank[0]][self.blank[1]], self.map[coord[0]][coord[1]]
-            self.blank = coord
-        if type == "test":
-            # [:] make new object!
-            result = [row[:] for row in self.map]
-            # result = [row.copy() for row in self.map]
-            result[coord[0]][coord[1]], result[self.blank[0]][self.blank[1]] = result[self.blank[0]][self.blank[1]], result[coord[0]][coord[1]]
-            return result
-        return None
+        self.map[coord[0]][coord[1]], self.map[self.blank[0]][self.blank[1]] = self.map[self.blank[0]][self.blank[1]], self.map[coord[0]][coord[1]]
+        self.blank = coord
     
     def check(self) -> bool:
         if self.map == self.answer:
@@ -70,18 +62,39 @@ class Block():
             order.append(available[randint])
         return order
     
-    def distance_answer(self):
-        distance = 0
-        for i in range(self.n):
-            for j in range(self.n):
-                num = self.map[i][j] - 1
-                if num == -1:
-                    continue
-                distance += abs(num // self.n - i) + abs(num % self.n - j)
-        return distance
 
 if __name__ == "__main__":
     import random
+    
+    def test(map, blank: list[int], target: int | list[int]) -> list[list[int]]:
+        n = len(map)
+        if isinstance(target, int):
+            position = target - 1
+        elif isinstance(target, list):
+            position = n * target[0] + target[1]
+
+        # check tile position is valid
+        assert 0 <= position < n**2
+        coord = [position // n, position % n]
+        
+        # [:] make new object!
+        result = [row[:] for row in map]
+        # result = [row.copy() for row in map]
+        result[coord[0]][coord[1]], result[blank[0]][blank[1]] = result[blank[0]][blank[1]], result[coord[0]][coord[1]]
+        return result, coord
+    
+    def distance_answer(map):
+        n = len(map)
+        distance = 0
+        for i in range(n):
+            for j in range(n):
+                num = map[i][j] - 1
+                if num == -1:
+                    distance += abs(n - 1 - i) + abs(n - 1 - j)
+                else:
+                    distance += abs(num // n - i) + abs(num % n - j)
+        return distance
+    
     block = Block(3)
     block.map = [[1,3,6],[4,0,2],[7,5,8]]
     block.blank = (1, 1)
@@ -89,9 +102,19 @@ if __name__ == "__main__":
     # block.move(6)
     # block.check()
     # print(block.blank)
-    
+
     block.print()
     # block.print("answer")
-    print(block.move(6, "test"))
+    avail_count = len(block.available())
+    queue = list(zip(block.available()[:], 
+                     [block.map[:][:] for _ in range(avail_count)], 
+                     [block.blank[:] for _ in range(avail_count)],
+                     [distance_answer(block.map) for _ in range(avail_count)]))
+    while queue:
+        tile, map, blank, score = queue.pop(0)
+        new_map, new_blank = test(map, blank, tile)
+        new_score = distance_answer(new_map)
+        if new_score < score:
+            queue.append()
     
-    print(block.distance_answer())
+    # print(block.distance_answer())
