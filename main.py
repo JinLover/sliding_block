@@ -1,22 +1,35 @@
 class Block():
     def __init__(self, n):
+        self.n = n
         self.map = [[(i+n*j)%(n**2) for i in range(1, n+1)] for j in range(n)]
         self.answer = [[(i+n*j)%(n**2) for i in range(1, n+1)] for j in range(n)]
         self.blank = [n-1, n-1]
         
-    def adjacent(self, co1, co2):
+    def distance(self, co1, co2):
         y1, x1 = co1
         y2, x2 = co2
-        dis = ((x1-x2)**2 + (y1-y2)**2)**0.5
+        return ((x1-x2)**2 + (y1-y2)**2)**0.5
+    
+    def adjacent(self, co1, co2):
+        dis = self.distance(co1, co2)
         if dis == 1:
             return True
         return False
+
+    def available(self):
+        y, x = self.blank
+        result = []
+        for tile in [[y-1, x], [y+1, x], [y, x-1], [y, x+1]]:
+            position = self.n * tile[0] + tile[1]
+            if 0 <= position and position < self.n**2:
+                result.append(tile)
+        return result
         
     def move(self, position):
         position -= 1
         # check tile position is valid
-        assert 0 <= position and position <= n**2-1
-        coord = [position // n, position % n]
+        assert 0 <= position and position <= self.n**2-1
+        coord = [position // self.n, position % self.n]
         # check tile is adjacent to blank
         assert self.adjacent(self.blank, coord)
         self.map[coord[0]][coord[1]], self.map[self.blank[0]][self.blank[1]] = self.map[self.blank[0]][self.blank[1]], self.map[coord[0]][coord[1]]
@@ -27,8 +40,10 @@ class Block():
             return True
         return False
 
-block = Block(3)
-print(block.map)
-block.move(6)
-print(block.map)
-block.check()
+if __name__ == "__main__":
+    block = Block(3)
+    # print(block.map)
+    # block.move(6)
+    # block.check()
+    print(block.blank)
+    print(block.available())
