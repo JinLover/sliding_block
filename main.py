@@ -1,22 +1,22 @@
 class Block():
-    def __init__(self, n):
+    def __init__(self, n:int):
         self.n = n
         self.map = [[(i+n*j)%(n**2) for i in range(1, n+1)] for j in range(n)]
         self.answer = [[(i+n*j)%(n**2) for i in range(1, n+1)] for j in range(n)]
         self.blank = [n-1, n-1]
         
-    def distance(self, co1, co2):
+    def distance(self, co1: list, co2: list) -> float:
         y1, x1 = co1
         y2, x2 = co2
         return ((x1-x2)**2 + (y1-y2)**2)**0.5
     
-    def adjacent(self, co1, co2):
+    def adjacent(self, co1: list, co2: list) -> bool:
         dis = self.distance(co1, co2)
         if dis == 1:
             return True
         return False
 
-    def available(self):
+    def available(self) -> list[list]:
         y, x = self.blank
         result = []
         for tile in [[y-1, x], [y+1, x], [y, x-1], [y, x+1]]:
@@ -40,7 +40,7 @@ class Block():
         self.blank = coord
             
         
-    def check(self):
+    def check(self) -> bool:
         if self.map == self.answer:
             return True
         return False
