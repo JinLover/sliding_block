@@ -4,6 +4,7 @@ class Block():
         self.map = [[(i+n*j)%(n**2) for i in range(1, n+1)] for j in range(n)]
         self.answer = [[(i+n*j)%(n**2) for i in range(1, n+1)] for j in range(n)]
         self.blank = [n-1, n-1]
+        self.log = []
         
     def distance(self, co1: list, co2: list) -> float:
         y1, x1 = co1
@@ -37,6 +38,7 @@ class Block():
         assert self.adjacent(self.blank, coord)
         self.map[coord[0]][coord[1]], self.map[self.blank[0]][self.blank[1]] = self.map[self.blank[0]][self.blank[1]], self.map[coord[0]][coord[1]]
         self.blank = coord
+        self.log.append(coord)
         
     def distance_answer(self):
         distance = 0
@@ -72,6 +74,9 @@ class Block():
             order.append(available[randint])
         return order
     
+    def reset_log(self):
+        self.log = []
+    
 if __name__ == "__main__":
     import random, copy
     
@@ -98,5 +103,5 @@ if __name__ == "__main__":
         if new_score < score:
             for tile in object.available():
                 queue.append((tile, copy.deepcopy(object)))
-    object.print()
-    # print(block.distance_answer())
+    # print(object.log)
+    print([3*x[0] + x[1]+1 for x in object.log])
