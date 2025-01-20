@@ -25,15 +25,20 @@ class Block():
                 result.append(tile)
         return result
         
-    def move(self, position):
-        position -= 1
+    def move(self, target: int | list[int]) -> None:
+        if isinstance(target, int):
+            position = target - 1
+        elif isinstance(target, list):
+            position = self.n * target[0] + target[1]
+
         # check tile position is valid
-        assert 0 <= position and position <= self.n**2-1
+        assert 0 <= position < self.n**2
         coord = [position // self.n, position % self.n]
         # check tile is adjacent to blank
         assert self.adjacent(self.blank, coord)
         self.map[coord[0]][coord[1]], self.map[self.blank[0]][self.blank[1]] = self.map[self.blank[0]][self.blank[1]], self.map[coord[0]][coord[1]]
         self.blank = coord
+            
         
     def check(self):
         if self.map == self.answer:
@@ -42,8 +47,10 @@ class Block():
 
 if __name__ == "__main__":
     block = Block(3)
-    # print(block.map)
+    print(block.map)
     # block.move(6)
     # block.check()
     print(block.blank)
-    print(block.available())
+    available = block.available()
+    block.move(available[1])
+    print(block.map)
