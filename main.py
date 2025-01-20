@@ -43,11 +43,24 @@ class Block():
             return True
         return False
     
-    def print(self):
+    def print(self, type="map"):
+        if type == "map":
+            target = self.map
+        elif type == "answer":
+            target = self.answer
         for i in range(self.n):
             for j in range(self.n):
-                print(self.map[i][j], end = " ")
+                print(target[i][j], end = " ")
             print()
+            
+    def scramble(self, n: int) -> list:
+        order = []
+        for _ in range(n):
+            available = block.available()
+            randint = random.randint(0, len(available)-1)
+            block.move(available[randint])
+            order.append(available[randint])
+        return order
 
 if __name__ == "__main__":
     import random
@@ -59,12 +72,6 @@ if __name__ == "__main__":
     # print(block.blank)
     
     # for _ in range(10):
-    #     available = block.available()
-    #     try:
-    #         randint = random.randint(0, len(available)-1)
-    #         # print(len(available), randint)
-    #         block.move(available[randint])
-    #     except:
-    #         print(randint, available[randint], block.blank)
             
     block.print()
+    block.print("answer")
