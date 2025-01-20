@@ -1,4 +1,4 @@
-class block_puzzle():
+class Block():
     def __init__(self, n):
         self.map = [[(i+n*j)%(n**2) for i in range(1, n+1)] for j in range(n)]
         self.answer = [[(i+n*j)%(n**2) for i in range(1, n+1)] for j in range(n)]
@@ -27,7 +27,7 @@ class block_puzzle():
             return True
         return False
 
-block = block_puzzle(3)
+block = Block(3)
 print(block.map)
 block.move(6)
 print(block.map)
