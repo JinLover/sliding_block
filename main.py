@@ -46,12 +46,19 @@ class Block():
             for j in range(self.n):
                 num = self.map[i][j] - 1
                 if num == -1:
+                    # distance += abs(self.n - 1 - i) + abs(self.n - 1 - j)
                     continue
                 distance += abs(num // self.n - i) + abs(num % self.n - j)
+        # print([0 if x == y else 1 for map_row, ans_row in zip(self.map, self.answer) for x, y in zip(map_row, ans_row)])
+        # return sum([0 if x == y else 1 for map_row, ans_row in zip(self.map, self.answer) for x, y in zip(map_row, ans_row)])
         return distance
     
     def check(self) -> bool:
-        if self.map == self.answer:
+        # for map_row, ans_row in zip(self.map, self.answer):
+        #     for x, y in zip(map_row, ans_row):
+        #         print(x, y) 
+            
+        if all(x == y for map_row, ans_row in zip(self.map, self.answer) for x, y in zip(map_row, ans_row)):
             return True
         return False
     
@@ -65,14 +72,11 @@ class Block():
                 print(target[i][j], end = " ")
             print()
             
-    def scramble(self, n: int) -> list:
-        order = []
+    def scramble(self, n: int):
         for _ in range(n):
             available = block.available()
             randint = random.randint(0, len(available)-1)
             block.move(available[randint])
-            order.append(available[randint])
-        return order
     
     def reset_log(self):
         self.log = []
@@ -80,9 +84,12 @@ class Block():
 if __name__ == "__main__":
     import random, copy
     
-    block = Block(3)
-    block.map = [[1,3,6],[4,0,2],[7,5,8]]
-    block.blank = (1, 1)
+    n = 3
+    block = Block(n)
+    block.scramble(100)
+    block.reset_log()
+    # block.map = [[1,3,6],[4,0,2],[7,5,8]]
+    # block.blank = (1, 1)
     # print(block.map)
     # block.move(6)
     # block.check()
@@ -93,15 +100,34 @@ if __name__ == "__main__":
     avail_count = len(block.available())
     queue = list(zip(block.available()[:], 
                      [copy.deepcopy(block) for _ in range(avail_count)]))
+    visit = []
+    answer = None
     while queue:
         tile, object = queue.pop(0)
-        score = object.distance_answer()
-        object.move(tile)
-        new_score = object.distance_answer()
         if object.check():
+            answer = object
             break
-        if new_score < score:
-            for tile in object.available():
-                queue.append((tile, copy.deepcopy(object)))
+        visit.append(object)
+        for state in visit:
+            if all([x == y for map_row, ans_row in zip(state.map, object.map) for x, y in zip(map_row, ans_row)]):
+                continue
+        score = len(object.log) + object.distance_answer()
+        object.move(tile)
+        # print([x[0] for x in queue])
+        # object.print()
+        # for tile, obj in queue:
+        #     obj.print()
+        # break
+        
+        new_score = len(object.log) + object.distance_answer()
+        print(tile, score, new_score)
+        object.print()
+        # if new_score <= score:
+        for tile in object.available():
+            queue.append((tile, copy.deepcopy(object)))
     # print(object.log)
-    print([3*x[0] + x[1]+1 for x in object.log])
+    if isinstance(answer, Block):
+        object.print()
+        print([n*x[0] + x[1]+1 for x in object.log])
+    else:
+        print("Fail!")
